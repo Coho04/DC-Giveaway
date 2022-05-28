@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.ShutdownEvent;
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -23,8 +24,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.time.Instant;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -37,6 +36,11 @@ public class Events extends ListenerAdapter {
 
     private final String modalGiveawayCreate = "giveaway-create";
     private final String modalGiveawayCreateOptionMessage = "message";
+
+    @Override
+    public void onGuildJoin(GuildJoinEvent e) {
+        e.getJDA().getShardManager().setActivity(Activity.playing("/help | " + e.getJDA().getGuilds().size() + " Servern"));
+    }
 
     @Override
     public void onShutdown(@NotNull ShutdownEvent e) {

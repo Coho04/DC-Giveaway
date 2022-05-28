@@ -6,6 +6,7 @@ import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import de.goldendeveloper.giveaway.Main;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -49,6 +50,7 @@ public class Discord {
             if (Main.production) {
                 Online();
             }
+            bot.getShardManager().setActivity(Activity.playing("/help | " + bot.getGuilds().size() + " Servern"));
         } catch (LoginException | InterruptedException e) {
             e.printStackTrace();
         }
