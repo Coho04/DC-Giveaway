@@ -1,7 +1,6 @@
 package de.goldendeveloper.giveaway;
 
 import de.goldendeveloper.giveaway.discord.Discord;
-import net.dv8tion.jda.api.entities.Activity;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -28,25 +27,6 @@ public class Main {
         discord = new Discord(config.getDiscordToken());
     }
 
-    public static String getProjektVersion() {
-        Properties properties = new Properties();
-        try {
-            properties.load(Main.class.getClass().getClassLoader().getResourceAsStream("project.properties"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return properties.getProperty("version");
-    }
-
-    public static String getProjektName() {
-        Properties properties = new Properties();
-        try {
-            properties.load(Main.class.getClass().getClassLoader().getResourceAsStream("project.properties"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return properties.getProperty("name");
-    }
 
     public static Discord getDiscord() {
         return discord;
