@@ -1,6 +1,7 @@
 package de.goldendeveloper.giveaway;
 
 import de.goldendeveloper.giveaway.discord.Discord;
+import net.dv8tion.jda.api.entities.Activity;
 
 import java.io.IOException;
 import java.util.Properties;

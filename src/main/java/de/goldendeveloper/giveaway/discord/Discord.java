@@ -7,6 +7,9 @@ import de.goldendeveloper.giveaway.Main;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -17,7 +20,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import javax.security.auth.login.LoginException;
 import java.util.Date;
 
-public class Discord {
+public class Discord implements EventListener {
 
     private JDA bot;
 
@@ -43,16 +46,22 @@ public class Discord {
                             GatewayIntent.GUILD_MESSAGE_TYPING, GatewayIntent.GUILD_VOICE_STATES,
                             GatewayIntent.GUILD_WEBHOOKS, GatewayIntent.GUILD_MEMBERS,
                             GatewayIntent.GUILD_MESSAGE_TYPING)
-                    .addEventListeners(new Events())
+                    .addEventListeners(new Events(), this)
                     .setAutoReconnect(true)
                     .build().awaitReady();
             registerCommands();
             if (Main.production) {
                 Online();
             }
-            bot.getShardManager().setActivity(Activity.playing("/help | " + bot.getGuilds().size() + " Servern"));
         } catch (LoginException | InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onEvent(GenericEvent event) {
+        if (event instanceof ReadyEvent) {
+            event.getJDA().getPresence().setActivity(Activity.playing("/help | " + event.getJDA().getGuilds().size() + " Servern"));
         }
     }
 
