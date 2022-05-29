@@ -30,6 +30,9 @@ public class Discord implements EventListener {
     public static String cmdHelp = "help";
     public static String cmdRestart = "restart";
     public static String cmdShutdown = "shutdown";
+    public static String cmdSettings = "settings";
+    public static String cmdSettingsSubCmdSetGiveawayChannel = "set-giveaway-channel";
+    public static String cmdSettingsSubCmdSetGiveawayChannelOptionTextChannel = "text-channel";
     public static String cmdGiveAway = "giveaway";
     public static String cmdGiveAwaySubCmdCreate = "create";
     public static String cmdGiveAwaySubCmdFinish = "finish";
@@ -76,6 +79,10 @@ public class Discord implements EventListener {
         bot.upsertCommand(cmdHelp, "Zeigt dir eine Liste möglicher Befehle an!").queue();
         bot.upsertCommand(cmdRestart, "Startet den Discord Bot neu!").queue();
         bot.upsertCommand(cmdShutdown, "Fährt den Discord Bot herunter!").queue();
+
+        bot.upsertCommand(cmdSettings, "Stellt den Discord Bot für deinen Server ein!").addSubcommands(
+                new SubcommandData(cmdSettingsSubCmdSetGiveawayChannel, "Setzt den TextChannel für die Giveaways").addOption(OptionType.CHANNEL, cmdSettingsSubCmdSetGiveawayChannelOptionTextChannel, "Setzt den TextChannel für die Giveaways", true)
+        ).queue();
         bot.upsertCommand(cmdGiveAway, "Veranstalte ein Giveaway auf deinem Discord Server!").addSubcommands(
                 new SubcommandData(cmdGiveAwaySubCmdCreate, "Erstellt ein neues Giveaway"),
                 new SubcommandData(cmdGiveAwaySubCmdFinish, "Beendet ein vorhandenes Giveaway").addOption(OptionType.STRING, cmdGiveAwaySubCmdFinishOptionID, "Giveaway ID", true)

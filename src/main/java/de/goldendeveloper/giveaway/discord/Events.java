@@ -4,11 +4,17 @@ import club.minnced.discord.webhook.WebhookClientBuilder;
 import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import de.goldendeveloper.giveaway.Main;
+import de.goldendeveloper.giveaway.MysqlConnection;
+import de.goldendeveloper.mysql.entities.Database;
+import de.goldendeveloper.mysql.entities.RowBuilder;
+import de.goldendeveloper.mysql.entities.SearchResult;
+import de.goldendeveloper.mysql.entities.Table;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.ShutdownEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -25,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -39,7 +46,18 @@ public class Events extends ListenerAdapter {
 
     @Override
     public void onGuildJoin(GuildJoinEvent e) {
-        e.getJDA().getShardManager().setActivity(Activity.playing("/help | " + e.getJDA().getGuilds().size() + " Servern"));
+        e.getJDA().getPresence().setActivity(Activity.playing("/help | " + e.getJDA().getGuilds().size() + " Servern"));
+        Database db = Main.getMysqlConnection().getMysql().getDatabase(MysqlConnection.dbName);
+        Table table = db.getTable(MysqlConnection.tableName);
+        System.out.println(table.existsRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId()));
+        if (!table.existsRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId())) {
+            table.insert(new RowBuilder().with(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId()).with(table.getColumn(MysqlConnection.clmGiveawayChannel), "").build());
+        }
+    }
+
+    @Override
+    public void onGuildLeave(GuildLeaveEvent e) {
+        e.getJDA().getPresence().setActivity(Activity.playing("/help | " + e.getJDA().getGuilds().size() + " Servern"));
     }
 
     @Override
@@ -54,7 +72,6 @@ public class Events extends ListenerAdapter {
         embed.setFooter(new WebhookEmbed.EmbedFooter("@Golden-Developer", Main.getDiscord().getBot().getSelfUser().getAvatarUrl()));
         embed.setTimestamp(new Date().toInstant());
         embed.setColor(0xFF0000);
-
         if (new WebhookClientBuilder(Main.getConfig().getDiscordWebhook()).build().send(embed.build()).isDone()) {
             System.exit(0);
         }
@@ -72,6 +89,26 @@ public class Events extends ListenerAdapter {
                     createGiveaway(e);
                 } else if (subCmd.equalsIgnoreCase(Discord.cmdGiveAwaySubCmdFinish)) {
                     finishGiveaway(e);
+                }
+            } else {
+                e.reply("Dazu hast du keine Rechte bitte informiere den Inhaber! Benötigtes Recht: ADMINISTRATOR").queue();
+            }
+        } else if (cmd.equalsIgnoreCase(Discord.cmdSettings)) {
+            if (e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
+                String subCmd = e.getSubcommandName();
+                if (subCmd.equalsIgnoreCase(Discord.cmdSettingsSubCmdSetGiveawayChannel)) {
+                    TextChannel textChannel = e.getOption(Discord.cmdSettingsSubCmdSetGiveawayChannelOptionTextChannel).getAsTextChannel();
+                    Database db = Main.getMysqlConnection().getMysql().getDatabase(MysqlConnection.dbName);
+                    Table table = db.getTable(MysqlConnection.tableName);
+                    System.out.println("ERROR 3");
+                    if (table.existsRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId())) {
+                        System.out.println("ERROR 2");
+                        table.getRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId()).set(table.getColumn(MysqlConnection.clmGiveawayChannel), textChannel.getId());
+                        e.reply("Der Giveaway Channel wurde erfolgreich gespeichert!").queue();
+                    } else {
+                        System.out.println("ERROR");
+                        e.reply("ERROR: Bitte lade den Discord Bot neu ein!").queue();
+                    }
                 }
             } else {
                 e.reply("Dazu hast du keine Rechte bitte informiere den Inhaber! Benötigtes Recht: ADMINISTRATOR").queue();
@@ -172,16 +209,30 @@ public class Events extends ListenerAdapter {
             embed.setColor(Color.orange);
             embed.addField("**Neues Giveaway**", message, false);
             embed.setFooter("@Golden-Developer | ID: #" + id);
-            e.getMessageChannel().sendMessageEmbeds(embed.build()).queue(msg -> {
-                Emote emote = e.getJDA().getEmoteById("980209183481823242");
-                if (emote != null) {
-                    msg.addReaction(emote).queue();
+            String textChannelID = "";
+            Database db = Main.getMysqlConnection().getMysql().getDatabase(MysqlConnection.dbName);
+            Table table = db.getTable(MysqlConnection.tableName);
+            if (table.existsRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId())) {
+                HashMap<String, SearchResult> row = table.getRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId()).get();
+                textChannelID = row.get(MysqlConnection.clmGiveawayChannel).getAsString();
+                TextChannel channel = e.getJDA().getTextChannelById(textChannelID);
+                if (channel != null) {
+                    channel.sendMessageEmbeds(embed.build()).queue(msg -> {
+                        Emote emote = e.getJDA().getEmoteById("980209183481823242");
+                        if (emote != null) {
+                            msg.addReaction(emote).queue();
+                        }
+                    });
+                    e.getGuild().createRole().queue(role -> {
+                        role.getManager().setName("Giveaway | #" + id).queue();
+                    });
+                    e.deferEdit().queue();
+                } else {
+                    e.reply("Der Giveaway Channel wurde nicht gesetzt oder konnte nicht gefunden werden nutze /help für weitere Infos!").queue();
                 }
-            });
-            e.getGuild().createRole().queue(role -> {
-                role.getManager().setName("Giveaway | #" + id).queue();
-            });
-            e.deferEdit().queue();
+            } else {
+                e.reply("ERROR: Bitte lade den Discord Bot neu ein!").queue();
+            }
         }
     }
 
@@ -210,7 +261,7 @@ public class Events extends ListenerAdapter {
     private void finishGiveaway(SlashCommandInteractionEvent e) {
         String id = e.getOption(Discord.cmdGiveAwaySubCmdFinishOptionID).getAsString();
         Message msg = getMessageWithGiveawayID(e.getTextChannel(), id);
-        String message  = "";
+        String message = "";
         for (MessageEmbed.Field f : getMessageWithGiveawayID(e.getTextChannel(), id).getEmbeds().get(0).getFields()) {
             if (f.getName().equalsIgnoreCase("**Neues Giveaway**")) {
                 message = f.getValue();
@@ -219,22 +270,35 @@ public class Events extends ListenerAdapter {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setFooter("@Golden-Developer");
 
-        Role role = e.getGuild().getRolesByName("Giveaway | " + id, true).get(0);
-        List<Member> members = role.getGuild().getMembersWithRoles(role);
-        if (members.size() >= 1) {
-            Member m = members.get(new Random().nextInt(members.size()));
-            embed.setColor(Color.GREEN);
-            embed.addField("**Giveaway gewinner**", "Der Gewinner des Giveaways mit der ID: " + id + " ist " + m.getAsMention() + ". Bitte melde dich bei dem Event Veranstalter!", false);
-            embed.addField("", ">" + message, false);
-            e.getTextChannel().sendMessageEmbeds(embed.build()).failOnInvalidReply(false).queue();
+        String textChannelID = "";
+        Database db = Main.getMysqlConnection().getMysql().getDatabase(MysqlConnection.dbName);
+        Table table = db.getTable(MysqlConnection.tableName);
+        if (table.existsRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId())) {
+            textChannelID = table.getRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId()).get().get(MysqlConnection.clmGiveawayChannel).getAsString();
+            TextChannel channel = e.getJDA().getTextChannelById(textChannelID);
+            if (channel != null) {
+                Role role = e.getGuild().getRolesByName("Giveaway | " + id, true).get(0);
+                List<Member> members = role.getGuild().getMembersWithRoles(role);
+                if (members.size() >= 1) {
+                    Member m = members.get(new Random().nextInt(members.size()));
+                    embed.setColor(Color.GREEN);
+                    embed.addField("**Giveaway gewinner**", "Der Gewinner des Giveaways mit der ID: " + id + " ist " + m.getAsMention() + ". Bitte melde dich bei dem Event Veranstalter!", false);
+                    embed.addField("", ">" + message, false);
+                    channel.sendMessageEmbeds(embed.build()).failOnInvalidReply(false).queue();
+                } else {
+                    embed.setColor(Color.GREEN);
+                    embed.addField("**Giveaway gewinner**", "Entschuldige etwas ist Schief gelaufen! Es konnte kein Gewinner bestimmt werden!", false);
+                    channel.sendMessageEmbeds(embed.build()).failOnInvalidReply(false).queue();
+                }
+                role.delete().queue();
+                e.getInteraction().reply("Das Giveaway mit der ID: " + id + " wurde erfolgreich ausgewertet!").queue();
+                msg.delete().queue();
+            } else {
+                e.reply("Der Giveaway Channel wurde nicht gesetzt oder konnte nicht gefunden werden nutze /help für weitere Infos!").queue();
+            }
         } else {
-            embed.setColor(Color.GREEN);
-            embed.addField("**Giveaway gewinner**", "Entschuldige etwas ist Schief gelaufen! Es konnte kein Gewinner bestimmt werden!", false);
-            e.getTextChannel().sendMessageEmbeds(embed.build()).failOnInvalidReply(false).queue();
+            e.reply("ERROR: Bitte lade den Discord Bot neu ein!").queue();
         }
-        e.getInteraction().reply("Das Giveaway mit der ID: " + id + " wurde erfolgreich ausgewertet!").queue();
-        msg.delete().queue();
-        role.delete().queue();
     }
 
     public static Message getMessageWithGiveawayID(TextChannel channel, String GiveawayID) {

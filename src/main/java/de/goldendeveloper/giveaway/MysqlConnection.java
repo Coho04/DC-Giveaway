@@ -2,6 +2,7 @@ package de.goldendeveloper.giveaway;
 
 import de.goldendeveloper.mysql.MYSQL;
 import de.goldendeveloper.mysql.entities.Database;
+import de.goldendeveloper.mysql.entities.MysqlTypes;
 import de.goldendeveloper.mysql.entities.Table;
 
 public class MysqlConnection {
@@ -9,6 +10,8 @@ public class MysqlConnection {
     private final MYSQL mysql;
     public static String dbName = "GD-Giveaway";
     public static String tableName = "settings";
+    public static String clmGuildID = "guild";
+    public static String clmGiveawayChannel = "giveawaychannel";
 
     public MysqlConnection(String hostname, int port, String username, String password) {
         mysql = new MYSQL(hostname, username, password, port);
@@ -20,6 +23,12 @@ public class MysqlConnection {
             db.createTable(tableName);
         }
         Table table = db.getTable(tableName);
+        if (!table.existsColumn(clmGuildID)) {
+            table.addColumn(clmGuildID, MysqlTypes.VARCHAR, 250);
+        }
+        if (!table.existsColumn(clmGiveawayChannel)) {
+            table.addColumn(clmGiveawayChannel, MysqlTypes.VARCHAR, 250);
+        }
     }
 
     public MYSQL getMysql() {

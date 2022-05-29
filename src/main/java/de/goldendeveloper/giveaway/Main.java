@@ -2,9 +2,6 @@ package de.goldendeveloper.giveaway;
 
 import de.goldendeveloper.giveaway.discord.Discord;
 
-import java.io.IOException;
-import java.util.Properties;
-
 public class Main {
 
     private static Discord discord;
