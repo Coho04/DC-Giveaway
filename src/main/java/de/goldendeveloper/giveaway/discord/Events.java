@@ -38,9 +38,6 @@ import java.util.Random;
 
 public class Events extends ListenerAdapter {
 
-    //giveaway create <Emote> <Message>
-    //giveaway finish <ID>
-
     private final String modalGiveawayCreate = "giveaway-create";
     private final String modalGiveawayCreateOptionMessage = "message";
 
@@ -85,10 +82,12 @@ public class Events extends ListenerAdapter {
         if (cmd.equalsIgnoreCase(Discord.cmdGiveAway)) {
             if (e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
                 String subCmd = e.getSubcommandName();
-                if (subCmd.equalsIgnoreCase(Discord.cmdGiveAwaySubCmdCreate)) {
-                    createGiveaway(e);
-                } else if (subCmd.equalsIgnoreCase(Discord.cmdGiveAwaySubCmdFinish)) {
-                    finishGiveaway(e);
+                if (subCmd != null) {
+                    if (subCmd.equalsIgnoreCase(Discord.cmdGiveAwaySubCmdCreate)) {
+                        createGiveaway(e);
+                    } else if (subCmd.equalsIgnoreCase(Discord.cmdGiveAwaySubCmdFinish)) {
+                        finishGiveaway(e);
+                    }
                 }
             } else {
                 e.reply("Dazu hast du keine Rechte bitte informiere den Inhaber! Benötigtes Recht: ADMINISTRATOR").queue();
