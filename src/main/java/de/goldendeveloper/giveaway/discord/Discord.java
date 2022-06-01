@@ -56,7 +56,7 @@ public class Discord implements EventListener {
                     .setAutoReconnect(true)
                     .build().awaitReady();
             registerCommands();
-            if (Main.production) {
+            if (Main.getDeployment()) {
                 Online();
             }
         } catch (LoginException | InterruptedException e) {
@@ -91,8 +91,7 @@ public class Discord implements EventListener {
 
     private void Online() {
         WebhookEmbedBuilder embed = new WebhookEmbedBuilder();
-
-        if (Main.restart) {
+        if (Main.getRestart()) {
             embed.setColor(0x33FFFF);
             embed.addField(new WebhookEmbed.EmbedField(false, "[Status]", "Neustart Erfolgreich"));
         } else {

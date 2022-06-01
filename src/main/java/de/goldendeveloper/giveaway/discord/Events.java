@@ -46,7 +46,6 @@ public class Events extends ListenerAdapter {
         e.getJDA().getPresence().setActivity(Activity.playing("/help | " + e.getJDA().getGuilds().size() + " Servern"));
         Database db = Main.getMysqlConnection().getMysql().getDatabase(MysqlConnection.dbName);
         Table table = db.getTable(MysqlConnection.tableName);
-        System.out.println(table.existsRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId()));
         if (!table.existsRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId())) {
             table.insert(new RowBuilder().with(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId()).with(table.getColumn(MysqlConnection.clmGiveawayChannel), "").build());
         }
@@ -69,9 +68,9 @@ public class Events extends ListenerAdapter {
         embed.setFooter(new WebhookEmbed.EmbedFooter("@Golden-Developer", Main.getDiscord().getBot().getSelfUser().getAvatarUrl()));
         embed.setTimestamp(new Date().toInstant());
         embed.setColor(0xFF0000);
-        if (new WebhookClientBuilder(Main.getConfig().getDiscordWebhook()).build().send(embed.build()).isDone()) {
+        new WebhookClientBuilder(Main.getConfig().getDiscordWebhook()).build().send(embed.build()).thenRun(() -> {
             System.exit(0);
-        }
+        });
     }
 
     @Override
@@ -125,7 +124,7 @@ public class Events extends ListenerAdapter {
                     Button.link("https://support.Golden-Developer.de", "Support Anfragen")
             ).queue();
         } else if (e.getName().equalsIgnoreCase(Discord.cmdShutdown)) {
-            if (Main.production) {
+            if (Main.getDeployment()) {
                 if (e.getUser() == zRazzer || e.getUser() == _Coho04_) {
                     e.getInteraction().reply("Der Bot wird nun heruntergefahren").queue();
                     e.getJDA().shutdown();
@@ -136,10 +135,10 @@ public class Events extends ListenerAdapter {
                 e.reply("Dieser Bot kann nicht heruntergefahren werden, da er sich im Entwickler Modus befindet!").queue();
             }
         } else if (e.getName().equalsIgnoreCase(Discord.cmdRestart)) {
-            if (Main.production) {
+            if (Main.getDeployment()) {
                 if (e.getUser() == zRazzer || e.getUser() == _Coho04_) {
                     try {
-                        e.getInteraction().reply("Der Discord Bot wird nun neugestartet!").queue();
+                        e.getInteraction().reply("Der Discord Bot [" + e.getJDA().getSelfUser().getName() + "] wird nun neugestartet!").queue();
                         Process p = Runtime.getRuntime().exec("screen -AmdS " + Main.getDiscord().getProjektName() + " java -Xms1096M -Xmx1096M -jar " + Main.getDiscord().getProjektName() + "-" + Main.getDiscord().getProjektVersion() + ".jar restart");
                         p.waitFor();
                         e.getJDA().shutdown();

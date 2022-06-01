@@ -8,15 +8,15 @@ public class Main {
     private static MysqlConnection mysqlConnection;
     private static Config config;
 
-    public static Boolean restart = false;
-    public static Boolean production = true;
+    private static Boolean restart = false;
+    private static Boolean deployment = true;
 
     public static void main(String[] args) {
         if (args.length >= 1 && args[0].equalsIgnoreCase("restart")) {
             restart = true;
         }
         if (System.getProperty("os.name").split(" ")[0].equalsIgnoreCase("windows")) {
-            production = false;
+            deployment = false;
         }
 
         config = new Config();
@@ -35,5 +35,13 @@ public class Main {
 
     public static Config getConfig() {
         return config;
+    }
+
+    public static Boolean getRestart() {
+        return restart;
+    }
+
+    public static Boolean getDeployment() {
+        return deployment;
     }
 }

@@ -29,6 +29,7 @@ public class MysqlConnection {
         if (!table.existsColumn(clmGiveawayChannel)) {
             table.addColumn(clmGiveawayChannel, MysqlTypes.VARCHAR, 250);
         }
+        System.out.println("MYSQL Finished");
     }
 
     public MYSQL getMysql() {
