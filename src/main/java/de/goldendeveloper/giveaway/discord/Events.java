@@ -12,20 +12,22 @@ import de.goldendeveloper.mysql.entities.Table;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.ShutdownEvent;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.events.session.ShutdownEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -95,7 +97,7 @@ public class Events extends ListenerAdapter {
             if (e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
                 String subCmd = e.getSubcommandName();
                 if (subCmd.equalsIgnoreCase(Discord.cmdSettingsSubCmdSetGiveawayChannel)) {
-                    TextChannel textChannel = e.getOption(Discord.cmdSettingsSubCmdSetGiveawayChannelOptionTextChannel).getAsTextChannel();
+                    TextChannel textChannel = e.getOption(Discord.cmdSettingsSubCmdSetGiveawayChannelOptionTextChannel).getAsChannel().asTextChannel();
                     Database db = Main.getMysqlConnection().getMysql().getDatabase(MysqlConnection.dbName);
                     Table table = db.getTable(MysqlConnection.tableName);
                     System.out.println("ERROR 3");
@@ -157,7 +159,7 @@ public class Events extends ListenerAdapter {
     @Override
     public void onMessageReactionAdd(MessageReactionAddEvent e) {
         if (!e.getMember().getUser().isBot()) {
-            if (e.getReactionEmote().getId().equals("980209183481823242")) {
+            if (e.getReaction().getEmoji().asCustom().getId().equals("980209183481823242")) {
                 List<MessageEmbed> embeds = e.getChannel().retrieveMessageById(e.getMessageId()).complete().getEmbeds();
                 if (embeds.size() <= 1) {
                     MessageEmbed embed = embeds.get(0);
@@ -180,7 +182,7 @@ public class Events extends ListenerAdapter {
     @Override
     public void onMessageReactionRemove(MessageReactionRemoveEvent e) {
         if (!e.getMember().getUser().isBot()) {
-            if (e.getReactionEmote().getId().equals("980209183481823242")) {
+            if (e.getReaction().getEmoji().asCustom().getId().equals("980209183481823242")) {
                 List<MessageEmbed> embeds = e.getChannel().getHistory().getMessageById(e.getMessageId()).getEmbeds();
                 if (embeds.size() <= 1) {
                     MessageEmbed embed = embeds.get(0);
@@ -211,12 +213,12 @@ public class Events extends ListenerAdapter {
             Database db = Main.getMysqlConnection().getMysql().getDatabase(MysqlConnection.dbName);
             Table table = db.getTable(MysqlConnection.tableName);
             if (table.existsRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId())) {
-                HashMap<String, SearchResult> row = table.getRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId()).get();
+                HashMap<String, SearchResult> row = table.getRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId()).getData();
                 textChannelID = row.get(MysqlConnection.clmGiveawayChannel).getAsString();
                 TextChannel channel = e.getJDA().getTextChannelById(textChannelID);
                 if (channel != null) {
                     channel.sendMessageEmbeds(embed.build()).queue(msg -> {
-                        Emote emote = e.getJDA().getEmoteById("980209183481823242");
+                        Emoji emote = e.getJDA().getEmojiById("980209183481823242");
                         if (emote != null) {
                             msg.addReaction(emote).queue();
                         }
@@ -251,16 +253,16 @@ public class Events extends ListenerAdapter {
                 .setRequired(true)
                 .build();
         Modal modal = Modal.create(modalGiveawayCreate, "Giveaway erstellen")
-                .addActionRows(ActionRow.of(message))
+                .addComponents(ActionRow.of(message))
                 .build();
         e.replyModal(modal).queue();
     }
 
     private void finishGiveaway(SlashCommandInteractionEvent e) {
         String id = e.getOption(Discord.cmdGiveAwaySubCmdFinishOptionID).getAsString();
-        Message msg = getMessageWithGiveawayID(e.getTextChannel(), id);
+        Message msg = getMessageWithGiveawayID(e.getChannel().asTextChannel(), id);
         String message = "";
-        for (MessageEmbed.Field f : getMessageWithGiveawayID(e.getTextChannel(), id).getEmbeds().get(0).getFields()) {
+        for (MessageEmbed.Field f : getMessageWithGiveawayID(e.getChannel().asTextChannel(), id).getEmbeds().get(0).getFields()) {
             if (f.getName().equalsIgnoreCase("**Neues Giveaway**")) {
                 message = f.getValue();
             }
@@ -272,7 +274,7 @@ public class Events extends ListenerAdapter {
         Database db = Main.getMysqlConnection().getMysql().getDatabase(MysqlConnection.dbName);
         Table table = db.getTable(MysqlConnection.tableName);
         if (table.existsRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId())) {
-            textChannelID = table.getRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId()).get().get(MysqlConnection.clmGiveawayChannel).getAsString();
+            textChannelID = table.getRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId()).getData().get(MysqlConnection.clmGiveawayChannel).getAsString();
             TextChannel channel = e.getJDA().getTextChannelById(textChannelID);
             if (channel != null) {
                 Role role = e.getGuild().getRolesByName("Giveaway | " + id, true).get(0);

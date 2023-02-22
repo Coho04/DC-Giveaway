@@ -24,10 +24,10 @@ public class MysqlConnection {
         }
         Table table = db.getTable(tableName);
         if (!table.existsColumn(clmGuildID)) {
-            table.addColumn(clmGuildID, MysqlTypes.VARCHAR, 250);
+            table.addColumn(clmGuildID);
         }
         if (!table.existsColumn(clmGiveawayChannel)) {
-            table.addColumn(clmGiveawayChannel, MysqlTypes.VARCHAR, 250);
+            table.addColumn(clmGiveawayChannel);
         }
         System.out.println("MYSQL Finished");
     }
