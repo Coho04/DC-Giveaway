@@ -18,9 +18,7 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.Date;
-import java.util.Properties;
 
 public class Discord implements EventListener {
 
@@ -56,6 +54,7 @@ public class Discord implements EventListener {
                     .build().awaitReady();
             registerCommands();
             if (Main.getDeployment()) {
+                Main.getServerCommunicator().startBot(bot);
                 Online();
             }
         } catch (InterruptedException e) {

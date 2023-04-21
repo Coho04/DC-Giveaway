@@ -45,6 +45,7 @@ public class Events extends ListenerAdapter {
 
     @Override
     public void onGuildJoin(GuildJoinEvent e) {
+        Main.getServerCommunicator().addServer(e.getGuild().getId());
         e.getJDA().getPresence().setActivity(Activity.playing("/help | " + e.getJDA().getGuilds().size() + " Servern"));
         Database db = Main.getMysqlConnection().getMysql().getDatabase(MysqlConnection.dbName);
         Table table = db.getTable(MysqlConnection.tableName);
@@ -55,6 +56,7 @@ public class Events extends ListenerAdapter {
 
     @Override
     public void onGuildLeave(GuildLeaveEvent e) {
+        Main.getServerCommunicator().removeServer(e.getGuild().getId());
         e.getJDA().getPresence().setActivity(Activity.playing("/help | " + e.getJDA().getGuilds().size() + " Servern"));
     }
 
