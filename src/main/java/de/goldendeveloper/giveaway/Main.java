@@ -16,16 +16,9 @@ public class Main {
         CustomConfig customConfig = new CustomConfig();
         DCBotBuilder dcBotBuilder = new DCBotBuilder(args, true);
         dcBotBuilder.registerEvents(new Events());
-        dcBotBuilder.registerCommands(registerCommands());
+        dcBotBuilder.registerCommands(new Giveaway(), new Settings());
         dcBotBuilder.build();
         mysqlConnection = new MysqlConnection(customConfig.getMysqlHostname(), customConfig.getMysqlPort(), customConfig.getMysqlUsername(), customConfig.getMysqlPassword());
-    }
-
-    public static LinkedList<CommandInterface> registerCommands() {
-        LinkedList<CommandInterface> commandInterfaces = new LinkedList<>();
-        commandInterfaces.add(new Giveaway());
-        commandInterfaces.add(new Settings());
-        return commandInterfaces;
     }
 
     public static MysqlConnection getMysqlConnection() {
