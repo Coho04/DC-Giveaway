@@ -9,6 +9,7 @@
     <version>1.0</version>
 
     <properties>
+        <java.version>20</java.version>
         <maven.compiler.source>18</maven.compiler.source>
         <maven.compiler.target>18</maven.compiler.target>
     </properties>
@@ -29,8 +30,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>14</source>
-                    <target>14</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
 
@@ -99,11 +100,6 @@
     </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>com.github.golden-developer</groupId>
-            <artifactId>MYSQL-Api</artifactId>
-            <version>5.3</version>
-        </dependency>
         <dependency>
             <groupId>de.goldendeveloper</groupId>
             <artifactId>DCB-Core</artifactId>
