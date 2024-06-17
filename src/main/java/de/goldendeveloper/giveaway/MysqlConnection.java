@@ -1,11 +1,9 @@
 package de.goldendeveloper.giveaway;
 
-import de.goldendeveloper.mysql.MYSQL;
-import de.goldendeveloper.mysql.entities.Database;
-import de.goldendeveloper.mysql.entities.Table;
-import de.goldendeveloper.mysql.exceptions.NoConnectionException;
 
-import java.sql.SQLException;
+import io.github.coho04.mysql.MYSQL;
+import io.github.coho04.mysql.entities.Database;
+import io.github.coho04.mysql.entities.Table;
 
 public class MysqlConnection {
 
@@ -15,7 +13,7 @@ public class MysqlConnection {
     public static String clmGuildID = "guild";
     public static String clmGiveawayChannel = "giveawaychannel";
 
-    public MysqlConnection(String hostname, int port, String username, String password) throws NoConnectionException, SQLException {
+    public MysqlConnection(String hostname, int port, String username, String password) {
         mysql = new MYSQL(hostname, username, password, port);
         if (!mysql.existsDatabase(dbName)) {
             mysql.createDatabase(dbName);

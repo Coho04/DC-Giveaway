@@ -4,7 +4,7 @@ import de.goldendeveloper.dcbcore.DCBot;
 import de.goldendeveloper.dcbcore.interfaces.CommandInterface;
 import de.goldendeveloper.giveaway.Main;
 import de.goldendeveloper.giveaway.MysqlConnection;
-import de.goldendeveloper.mysql.entities.Table;
+import io.github.coho04.mysql.entities.Table;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionType;

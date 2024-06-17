@@ -3,10 +3,10 @@ package de.goldendeveloper.giveaway.discord;
 import de.goldendeveloper.giveaway.Main;
 import de.goldendeveloper.giveaway.MysqlConnection;
 import de.goldendeveloper.giveaway.discord.commands.Giveaway;
-import de.goldendeveloper.mysql.entities.Database;
-import de.goldendeveloper.mysql.entities.RowBuilder;
-import de.goldendeveloper.mysql.entities.SearchResult;
-import de.goldendeveloper.mysql.entities.Table;
+import io.github.coho04.mysql.entities.Database;
+import io.github.coho04.mysql.entities.RowBuilder;
+import io.github.coho04.mysql.entities.SearchResult;
+import io.github.coho04.mysql.entities.Table;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -100,11 +100,6 @@ public class Events extends ListenerAdapter {
     }
 
     private Boolean hasRole(Member m, Role role) {
-        for (Role r : m.getRoles()) {
-            if (r == role) {
-                return true;
-            }
-        }
-        return false;
+        return m.getRoles().contains(role);
     }
 }
