@@ -1,7 +1,7 @@
-package de.goldendeveloper.giveaway.discord.commands;
+package io.github.coho04.giveaway.discord.commands;
 
-import de.goldendeveloper.giveaway.Main;
-import de.goldendeveloper.giveaway.MysqlConnection;
+import io.github.coho04.giveaway.Main;
+import io.github.coho04.giveaway.MysqlConnection;
 import io.github.coho04.dcbcore.DCBot;
 import io.github.coho04.dcbcore.interfaces.CommandInterface;
 import io.github.coho04.mysql.entities.Table;

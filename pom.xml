@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.goldendeveloper</groupId>
-    <artifactId>GD-Giveaway</artifactId>
+    <groupId>io.github.coho04</groupId>
+    <artifactId>DC-Giveaway</artifactId>
     <version>1.0</version>
 
     <properties>
@@ -72,7 +72,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.goldendeveloper.giveaway.Main</mainClass>
+                            <mainClass>io.github.coho04.giveaway.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -1,4 +1,4 @@
-package de.goldendeveloper.giveaway;
+package io.github.coho04.giveaway;
 
 
 import io.github.coho04.mysql.MYSQL;

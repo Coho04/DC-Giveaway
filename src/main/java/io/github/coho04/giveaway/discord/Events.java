@@ -1,8 +1,8 @@
-package de.goldendeveloper.giveaway.discord;
+package io.github.coho04.giveaway.discord;
 
-import de.goldendeveloper.giveaway.Main;
-import de.goldendeveloper.giveaway.MysqlConnection;
-import de.goldendeveloper.giveaway.discord.commands.Giveaway;
+import io.github.coho04.giveaway.discord.commands.Giveaway;
+import io.github.coho04.giveaway.Main;
+import io.github.coho04.giveaway.MysqlConnection;
 import io.github.coho04.mysql.entities.Database;
 import io.github.coho04.mysql.entities.RowBuilder;
 import io.github.coho04.mysql.entities.SearchResult;
