@@ -1,9 +1,9 @@
 package de.goldendeveloper.giveaway.discord.commands;
 
-import de.goldendeveloper.dcbcore.DCBot;
-import de.goldendeveloper.dcbcore.interfaces.CommandInterface;
 import de.goldendeveloper.giveaway.Main;
 import de.goldendeveloper.giveaway.MysqlConnection;
+import io.github.coho04.dcbcore.DCBot;
+import io.github.coho04.dcbcore.interfaces.CommandInterface;
 import io.github.coho04.mysql.entities.Database;
 import io.github.coho04.mysql.entities.Table;
 import net.dv8tion.jda.api.EmbedBuilder;
