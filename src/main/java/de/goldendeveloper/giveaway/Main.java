@@ -1,9 +1,9 @@
 package de.goldendeveloper.giveaway;
 
-import de.goldendeveloper.dcbcore.DCBotBuilder;
 import de.goldendeveloper.giveaway.discord.Events;
 import de.goldendeveloper.giveaway.discord.commands.Giveaway;
 import de.goldendeveloper.giveaway.discord.commands.Settings;
+import io.github.coho04.dcbcore.DCBotBuilder;
 
 import java.sql.SQLException;
 
