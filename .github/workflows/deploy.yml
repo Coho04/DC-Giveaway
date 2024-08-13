@@ -42,8 +42,10 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            cd '${{ secrets.SERVER_DIR }}'
-            ./start.sh
+            cd ${{ secrets.SERVER_DIR }} && cd ../
+            docker compose down gd_giveaway
+            docker compose build --no-cache gd_giveaway
+            docker compose up -d gd_giveaway
           host: ${{ secrets.HOST }}
           port: 22
           user: ${{ secrets.USERNAME }}

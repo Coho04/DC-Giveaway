@@ -8,7 +8,7 @@ import io.github.coho04.mysql.entities.Table;
 public class MysqlConnection {
 
     private final MYSQL mysql;
-    public static String dbName = "GD-Giveaway";
+    public static String dbName = "giveaway_db";
     public static String tableName = "settings";
     public static String clmGuildID = "guild";
     public static String clmGiveawayChannel = "giveawaychannel";
