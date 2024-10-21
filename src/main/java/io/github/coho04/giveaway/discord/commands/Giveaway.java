@@ -84,7 +84,7 @@ public class Giveaway implements CommandInterface {
         });
         EmbedBuilder embed = new EmbedBuilder();
         embed.setFooter("@Golden-Developer");
-        Database db = Main.getMysqlConnection().getMysql().getDatabase(MysqlConnection.dbName);
+        Database db = Main.getMysqlConnection().getMysql().getDatabase(Main.getCustomConfig().getMysqlDatabase());
         Table table = db.getTable(MysqlConnection.tableName);
         if (table.existsRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId())) {
             String textChannelID = table.getRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId()).getData().get(MysqlConnection.clmGiveawayChannel).getAsString();

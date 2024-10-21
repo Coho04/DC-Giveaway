@@ -27,7 +27,7 @@ public class Events extends ListenerAdapter {
 
     @Override
     public void onGuildJoin(GuildJoinEvent e) {
-        Database db = Main.getMysqlConnection().getMysql().getDatabase(MysqlConnection.dbName);
+        Database db = Main.getMysqlConnection().getMysql().getDatabase(Main.getCustomConfig().getMysqlDatabase());
         Table table = db.getTable(MysqlConnection.tableName);
         if (!table.existsRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId())) {
             table.insert(new RowBuilder().with(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId())
@@ -75,7 +75,7 @@ public class Events extends ListenerAdapter {
             embed.setColor(Color.orange);
             embed.addField("**Neues Giveaway**", message, false);
             embed.setFooter("@Golden-Developer | ID: #" + id);
-            Table table = Main.getMysqlConnection().getMysql().getDatabase(MysqlConnection.dbName).getTable(MysqlConnection.tableName);
+            Table table = Main.getMysqlConnection().getMysql().getDatabase(Main.getCustomConfig().getMysqlDatabase()).getTable(MysqlConnection.tableName);
             if (table.existsRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId())) {
                 HashMap<String, SearchResult> row = table.getRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId()).getData();
                 TextChannel channel = e.getJDA().getTextChannelById(row.get(MysqlConnection.clmGiveawayChannel).getAsString());

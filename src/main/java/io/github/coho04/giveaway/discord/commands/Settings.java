@@ -31,7 +31,7 @@ public class Settings implements CommandInterface {
         if (e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
             if (e.getSubcommandName().equalsIgnoreCase(subCmdSetGiveawayChannel)) {
                 String textChannelId = e.getOption(subCmdSetGiveawayChannelOptionTextChannel).getAsChannel().asTextChannel().getId();
-                Table table = Main.getMysqlConnection().getMysql().getDatabase(MysqlConnection.dbName).getTable(MysqlConnection.tableName);
+                Table table = Main.getMysqlConnection().getMysql().getDatabase(Main.getCustomConfig().getMysqlDatabase()).getTable(MysqlConnection.tableName);
                 if (table.existsRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId())) {
                     table.getRow(table.getColumn(MysqlConnection.clmGuildID), e.getGuild().getId()).set(table.getColumn(MysqlConnection.clmGiveawayChannel), textChannelId);
                     e.reply("Der Giveaway Channel wurde erfolgreich gespeichert!").queue();

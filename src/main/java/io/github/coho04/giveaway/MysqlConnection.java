@@ -8,17 +8,16 @@ import io.github.coho04.mysql.entities.Table;
 public class MysqlConnection {
 
     private final MYSQL mysql;
-    public static String dbName = "giveaway_db";
     public static String tableName = "settings";
     public static String clmGuildID = "guild";
     public static String clmGiveawayChannel = "giveawaychannel";
 
     public MysqlConnection(String hostname, int port, String username, String password) {
         mysql = new MYSQL(hostname, username, password, port);
-        if (!mysql.existsDatabase(dbName)) {
-            mysql.createDatabase(dbName);
+        if (!mysql.existsDatabase(Main.getCustomConfig().getMysqlDatabase())) {
+            mysql.createDatabase(Main.getCustomConfig().getMysqlDatabase());
         }
-        Database db = mysql.getDatabase(dbName);
+        Database db = mysql.getDatabase(Main.getCustomConfig().getMysqlDatabase());
         if (!db.existsTable(tableName)) {
             db.createTable(tableName);
         }
